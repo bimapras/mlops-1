@@ -61,18 +61,6 @@ def model_builder(hp):
         tf.keras.layers.Dense(1, activation='sigmoid')
     ])
     
-    # inputs = tf.keras.Input(shape=(1,), name=transformed_name(FEATURE_KEY), dtype=tf.string)
-    # reshaped_narrative = tf.reshape(inputs, [-1])
-    # x = vectorize_layer(reshaped_narrative)
-    # x = layers.Embedding(input_dim=VOCAB_SIZE,output_dim=embedding_dim, name="embedding")(x)
-    # x = tf.keras.layers.LSTM(64, return_sequences=True)(x)
-    # x = layers.GlobalMaxPooling1D()(x)
-    # x = layers.Dense(64, activation='relu')(x)
-    # x = layers.Dense(32, activation="relu")(x)
-    # outputs = layers.Dense(1, activation='sigmoid')(x)
-    
-    # model = tf.keras.Model(inputs=inputs, outputs = outputs)
-    
     model.compile(
         loss = 'binary_crossentropy',
         optimizer=tf.keras.optimizers.Adam(learning_rate=hp['learning_rate']),
@@ -100,7 +88,6 @@ def _get_serve_tf_examples_fn(model, tf_transform_output):
         
         transformed_features = model.tft_layer(parsed_features)
         
-        # get predictions using the transformed features
         return model(transformed_features)
         
     return serve_tf_examples_fn
@@ -113,6 +100,7 @@ def run_fn(fn_args: FnArgs) -> None:
         log_dir = log_dir, update_freq='batch'
     )
     
+    # Create callback early stopping and model checkpoint
     es = tf.keras.callbacks.EarlyStopping(monitor='val_binary_accuracy', mode='max', verbose=1, patience=2)
     mc = tf.keras.callbacks.ModelCheckpoint(fn_args.serving_model_dir, monitor='val_binary_accuracy', mode='max', verbose=1, save_best_only=True)
     

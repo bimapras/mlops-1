@@ -48,7 +48,7 @@ def input_fn(file_pattern,
         label_key=transformed_name(LABEL_KEY))
     return dataset
 
-# Vocabulary size and number of words in a sequence.
+
 VOCAB_SIZE = 10000
 SEQUENCE_LENGTH = 100
 
@@ -59,6 +59,7 @@ vectorize_layer = layers.TextVectorization(
     output_sequence_length=SEQUENCE_LENGTH)
 
 def model_builder(hp):
+    
     model = tf.keras.Sequential([
         tf.keras.layers.Input(shape=(1,), dtype=tf.string, name=transformed_name(FEATURE_KEY)),
         tf.keras.layers.Lambda(lambda x: tf.reshape(x, [-1])),
@@ -71,6 +72,7 @@ def model_builder(hp):
         tf.keras.layers.Dense(1, activation='sigmoid')
     ])
     
+    # menghapus session model
     tf.keras.backend.clear_session()
     
     model.compile(
